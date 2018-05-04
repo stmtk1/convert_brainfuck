@@ -5,8 +5,6 @@ import Control.Applicative
 import Str
 
 before_main = [str|
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
@@ -17,67 +15,71 @@ class Main{
         m.run();
     }
 
-    LinkedList<Character> tape;
-    ListIterator<Character> position;
-    char value;
+    char[] tape;
+    int position;
 
     Main(){
-        tape = new LinkedList<>();
-        tape.addLast((char)0);
-        position = tape.listIterator();
-        position.next();
-        value = (char)0;
+        tape = new char[1000];
+        for(int i = 0; i < tape.length; i++)
+            tape[i] = (char)0;
+        position = 0;
     }
 
     void incl(){
-        position.set(++value);
+        tape[position]++;
     }
 
     void decl(){
-        position.set(--value);
+        tape[position]--;
     }
 
     void puts(){
-        System.out.println((int)value);
+        System.out.print(tape[position]);
     }
 
     void next_var(){
-        if(!position.hasNext()){
-            tape.addLast((char)0);
+        position++;
+        if(position >= tape.length){
+            char[] new_tape = new char[tape.length + 1000];
+            for(int i = 0; i < new_tape.length; i++){
+                if(i < tape.length){
+                    new_tape[i] = tape[i];
+                }else{
+                    new_tape[i] = 0;
+                }
+            }
+            tape = new_tape;
         }
-        value = position.next();
     }
 
     void prev_var(){
-        if(!position.hasPrevious()){
-            tape.addFirst((char)0);
-        }else{
-            value = position.previous();
+        if(position <= 0){
+            char[] new_tape = new char[tape.length + 1000];
+            for(int i = 0; i < new_tape.length; i++){
+                if(i < 1000){
+                    new_tape[i] = 0;
+                }else{
+                    new_tape[i] = tape[i - 1000];
+                }
+            }
+            tape = new_tape;
+            position += 1000;
         }
+        position--;
     }
 
     void gets(){
         InputStreamReader reader = new InputStreamReader(System.in);
         try{
-            position.set(value = (char)reader.read());
+            tape[position] = (char)reader.read();
             reader.close();
         }catch(IOException e){
             e.printStackTrace();
         }
-    }|]
 
-{-
-convert_brainfuck :: String -> String
-convert_brainfuck "" = ""
-convert_brainfuck ('+':rest) = "incl();\n" ++ convert_brainfuck rest
-convert_brainfuck ('-':rest) = "decl();\n" ++ convert_brainfuck rest
-convert_brainfuck ('>':rest) = "next_var();\n" ++ convert_brainfuck rest
-convert_brainfuck ('<':rest) = "prev_var();\n" ++ convert_brainfuck rest
-convert_brainfuck ('.':rest) = "puts();\n" ++ convert_brainfuck rest
-convert_brainfuck (',':rest) = "gets();\n" ++ convert_brainfuck rest
-convert_brainfuck ('[':rest) = "while(value != 0){\n" ++ convert_brainfuck rest
-convert_brainfuck (']':rest) = "}\n" ++ convert_brainfuck rest
--}
+    }
+|]
+
 convert_brainfuck :: String -> String
 convert_brainfuck "" = ""
 convert_brainfuck ('+':rest) = "incl();" ++ convert_brainfuck rest
@@ -86,9 +88,8 @@ convert_brainfuck ('>':rest) = "next_var();" ++ convert_brainfuck rest
 convert_brainfuck ('<':rest) = "prev_var();" ++ convert_brainfuck rest
 convert_brainfuck ('.':rest) = "puts();" ++ convert_brainfuck rest
 convert_brainfuck (',':rest) = "gets();" ++ convert_brainfuck rest
-convert_brainfuck ('[':rest) = "while(value != 0){" ++ convert_brainfuck rest
+convert_brainfuck ('[':rest) = "while(tape[position] != 0){" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = "}" ++ convert_brainfuck rest
-
 
 create_run :: String -> String
 create_run input = "void run(){" ++ (convert_brainfuck input) ++ "System.out.println();}}"
@@ -97,8 +98,6 @@ create_program :: String -> String
 create_program input = before_main ++ (create_run input)
 
 brainfuck :: String
---brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
---brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]"
-brainfuck = "++++++++++++++++++++++.>>"
+brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
 
 main = putStrLn $ create_program brainfuck
