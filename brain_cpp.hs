@@ -54,6 +54,7 @@ convert_brainfuck ('.':rest) = "puts();\n" ++ convert_brainfuck rest
 convert_brainfuck (',':rest) = "gets();\n" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = "while(*position != 0){\n" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = "}\n" ++ convert_brainfuck rest
+convert_brainfuck (_:rest) = convert_brainfuck rest
 
 create_main :: String -> String
 create_main input = "int main(){tape.push_back(0);\nposition = tape.begin();\n" ++ (convert_brainfuck input) ++ "cout << endl;return 0;}"
