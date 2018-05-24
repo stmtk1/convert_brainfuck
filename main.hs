@@ -1,9 +1,14 @@
 import System.Environment
-import Brain_cpp
-import Brain_rb
 import System.Posix.Files 
 import System.Process
 import Control.Applicative
+
+-- local files
+import Brain_cpp
+import Brain_rb
+import Brain_cs
+import Brain_py
+import Brain_java
 
 main :: IO ()
 main = do
@@ -29,3 +34,6 @@ get_extension (_:back) = get_extension back
 convert :: String -> String -> String
 convert bf "cpp" = Brain_cpp.create_program bf
 convert bf "rb" = Brain_rb.create_program bf
+convert bf "cs" = Brain_cs.create_program bf
+--convert bf "py" = Brain_py.create_program bf
+convert bf "java" = Brain_java.create_program bf

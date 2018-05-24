@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Main where
+module Brain_cs where
 import Control.Applicative
 import Str
 
@@ -83,6 +83,7 @@ convert_brainfuck ('.':rest) = "puts();" ++ convert_brainfuck rest
 convert_brainfuck (',':rest) = "gets();" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = "while(tape[position] != 0){" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = "}" ++ convert_brainfuck rest
+convert_brainfuck (_:rest) =  convert_brainfuck rest
 
 create_run :: String -> String
 create_run input = "void run(){" ++ (convert_brainfuck input) ++ "Console.WriteLine();}}"
@@ -93,4 +94,4 @@ create_program input = before_main ++ (create_run input)
 brainfuck :: String
 brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
 
-main = putStrLn $ create_program brainfuck
+--main = putStrLn $ create_program brainfuck
