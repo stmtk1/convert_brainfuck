@@ -35,5 +35,5 @@ convert :: String -> String -> String
 convert bf "cpp" = Brain_cpp.create_program bf
 convert bf "rb" = Brain_rb.create_program bf
 convert bf "cs" = Brain_cs.create_program bf
---convert bf "py" = Brain_py.create_program bf
+convert bf "py" = Brain_py.create_program bf
 convert bf "java" = Brain_java.create_program bf
