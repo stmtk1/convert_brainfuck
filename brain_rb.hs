@@ -40,21 +40,27 @@ class BuildLambda
         self
     end
 
+    def loop_self(builder)
+        @funcs.push([:loop_self, builder])
+        self
+    end
+
     def evaluate lst
         for func in @funcs
-            case func
-            when :increment then
+            if func == :increment 
                 lst = lst.increment
-            when :decrement then
+            elsif func == :decrement
                 lst = lst.decrement
-            when :next_var then
+            elsif func == :next_var then
                 lst = lst.next_var
-            when :prev_var then
+            elsif func == :prev_var then
                 lst = lst.prev_var
-            when :print_value then
+            elsif func == :print_value then
                 lst = lst.print_value
-            when :get_value then
+            elsif func == :get_value then
                 lst = lst.get_value
+            elsif func.class == Array and func[0] == :loop_self then
+                lst = lst.loop_self(func[1])
             end
         end
         lst
