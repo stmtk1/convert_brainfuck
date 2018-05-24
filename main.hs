@@ -1,13 +1,15 @@
 import System.Environment
 import Brain_cpp
+import Brain_rb
 import System.Posix.Files 
---import System.Cmd
 import System.Process
+import Control.Applicative
 
 main :: IO ()
 main = do
     (i_file, o_file) <- parseArg <$> getArgs
-    (writeFile o_file) =<< create_program <$> readFile i_file
+    bf <- readFile i_file
+    writeFile o_file $ convert bf $ get_extension o_file
 
 {-
 -- input file is @i_file
@@ -19,13 +21,11 @@ parseArg ("-o" : o_file : i_file : []) = (i_file, o_file)
 parseArg (i_file : "-o" : o_file : []) = (i_file, o_file)
 parseArg (i_file : []) = ("", i_file)
 
-{-
-outputFile :: FilePath -> String -> IO ()
-outputFile file prog = let
-    create_and_write :: Bool -> IO ()
-    create_and_write True  = writeFile file prog >> putStrLn "asfas"
-    --create_and_write False = touchFile file >> writeFile file prog
-    create_and_write False = putStrLn "false" >> rawSystem "touch" [file] -- >> writeFile file prog 
-    in create_and_write =<< (fileExist file)
+get_extension :: String -> String
+get_extension "" = ""
+get_extension ('.':answer) = answer
+get_extension (_:back) = get_extension back
 
--}
+convert :: String -> String -> String
+convert bf "cpp" = Brain_cpp.create_program bf
+convert bf "rb" = Brain_rb.create_program bf

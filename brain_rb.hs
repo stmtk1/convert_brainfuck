@@ -1,13 +1,74 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Main where
+module Brain_rb where
 import Control.Applicative
 import Str
 
 before_main = [str|
+class BuildLambda
+    def initialize
+        @funcs = []
+    end
+
+    def increment
+        @funcs.push(:increment)
+        self
+    end
+
+    def decrement
+        @funcs.push(:decrement)
+        self
+    end
+
+    def next_var
+        @funcs.push(:next_var)
+        self
+    end
+
+    def prev_var
+        @funcs.push(:prev_var)
+        self
+    end
+
+    def print_value
+        @funcs.push(:print_value)
+        self
+    end
+
+    def get_value
+        @funcs.push(:get_value)
+        self
+    end
+
+    def evaluate lst
+        for func in @funcs
+            case func
+            when :increment then
+                lst = lst.increment
+            when :decrement then
+                lst = lst.decrement
+            when :next_var then
+                lst = lst.next_var
+            when :prev_var then
+                lst = lst.prev_var
+            when :print_value then
+                lst = lst.print_value
+            when :get_value then
+                lst = lst.get_value
+            end
+        end
+        lst
+    end
+
+    def loop_var lst
+        return lst if lst.value == 0
+        loop_var(evaluate(lst))
+    end
+end
+
 class TuringHead
     BYTE = 256
-    attr_accessor :prev, :next
+    attr_accessor :prev, :next, :value
     def initialize(prev = nil)
         @value = 0
     end
@@ -48,9 +109,8 @@ class TuringHead
         self
     end
 
-    def loop_self(&block)
-        return self if @value == 0
-        block.call(self).loop_self(&block)
+    def loop_self(builder)
+        builder.loop_var self
     end
 end
 |]
@@ -63,8 +123,9 @@ convert_brainfuck ('>':rest) = ".next_var" ++ convert_brainfuck rest
 convert_brainfuck ('<':rest) = ".prev_var" ++ convert_brainfuck rest
 convert_brainfuck ('.':rest) = ".print_value" ++ convert_brainfuck rest
 convert_brainfuck (',':rest) = ".get_value" ++ convert_brainfuck rest
-convert_brainfuck ('[':rest) = ".loop_self{|a| a" ++ convert_brainfuck rest
-convert_brainfuck (']':rest) = "}" ++ convert_brainfuck rest
+convert_brainfuck ('[':rest) = ".loop_self(BuildLambda.new" ++ convert_brainfuck rest
+convert_brainfuck (']':rest) = ")" ++ convert_brainfuck rest
+convert_brainfuck (_:rest) = convert_brainfuck rest
 
 create_run :: String -> String
 create_run input = "TuringHead.new" ++ (convert_brainfuck input)
@@ -75,4 +136,4 @@ create_program input = before_main ++ (create_run input)
 brainfuck :: String
 brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
 
-main = putStrLn $ create_program brainfuck
+-- main = putStrLn $ create_program brainfuck
