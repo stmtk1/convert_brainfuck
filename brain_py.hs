@@ -36,7 +36,11 @@ class BuildLambda():
     def get_var(self):
         self.processes.append("get_var")
         return self
-    
+
+    def loop_var(self, builder):
+        self.processes.append(["loop_var", builder])
+        return self
+
     def evaluate(self, evaled):
         for p in self.processes:
             if p == "increment":
@@ -51,6 +55,8 @@ class BuildLambda():
                 evaled = evaled.print_var()
             elif p == "get_var":
                 evaled = evaled.get_var()
+            elif type(p) is list and p[0] == "loop_var":
+                evaled = evaled.loop_var(builder)
         return evaled
 
 class LinkedList():
@@ -107,8 +113,3 @@ create_run input = "LinkedList()" ++ (convert_brainfuck input)
 
 create_program :: String -> String
 create_program input = before_main ++ (create_run input)
-
-brainfuck :: String
-brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
-
---main = putStrLn $ create_program brainfuck
