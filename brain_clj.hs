@@ -99,6 +99,7 @@ convert_brainfuck ('.':rest) = " print_var\n" ++ convert_brainfuck rest
 convert_brainfuck (',':rest) = " get_var\n" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = " (loop_func\n" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = ")\n" ++ convert_brainfuck rest
+convert_brainfuck (_:rest) = convert_brainfuck rest
 
 {-
 convert_brainfuck ('+':rest) = " increment" ++ convert_brainfuck rest
@@ -118,10 +119,10 @@ create_main input = "(-> '((0))" ++ (convert_brainfuck input) ++ ")"
 create_program :: String -> String
 create_program input = before_main ++ (create_main input)
 
-brainfuck :: String
-brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
+--brainfuck :: String
+--brainfuck = ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]>++++++++[<++++>-]<.>+++++++++++[<+++++>-]<.>++++++++[<+++>-]<.+++.------.--------.[-]>++++++++[<++++>-]<+.[-]++++++++++."
 --brainfuck = ">+++++++++[<.++++++++>-]<>+++++++[<++++>-]<+++++++++++[-]>++++++++[<++++>-]<>+++++++++++[<+++++>-]<>++++++++[<+++>-]<+++--------------[-]>++++++++[<++++>-]<+[-]++++++++++"
 --brainfuck = ">+++++++++[<++++++++>-.]<."
 --brainfuck = "-.>.<.<.>>>>."
 
-main = putStrLn $ create_program brainfuck
+--main = putStrLn $ create_program brainfuck
