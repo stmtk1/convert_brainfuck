@@ -10,7 +10,6 @@ package main
 
 import(
     "fmt"
-    //"strings"
 )
 
 type TuringTape struct {
@@ -72,6 +71,10 @@ func print_var(a *TuringTape) {
     fmt.Printf("%c", a.tape[a.head])
 }
 
+func get_var(a *TuringTape) {
+    fmt.Scanf("%c", &a.tape[a.head])
+}
+
 |]
 
 convert_brainfuck :: String -> String
@@ -82,7 +85,7 @@ convert_brainfuck ('-':rest) = "decrement(&a)\n" ++ convert_brainfuck rest
 convert_brainfuck ('>':rest) = "next_var(&a)\n" ++ convert_brainfuck rest
 convert_brainfuck ('<':rest) = "prev_var(&a)\n" ++ convert_brainfuck rest
 convert_brainfuck ('.':rest) = "print_var(&a)\n" ++ convert_brainfuck rest
--- convert_brainfuck (',':rest) = " get_var()\n" ++ convert_brainfuck rest
+convert_brainfuck (',':rest) = " get_var(&a)\n" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = " for a.tape[a.head] != 0 {\n" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = "}\n" ++ convert_brainfuck rest
 convert_brainfuck (_:rest) = convert_brainfuck rest
