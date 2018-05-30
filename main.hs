@@ -11,6 +11,7 @@ import Brain_py
 import Brain_java
 import Brain_clj
 import Brain_php
+import Brain_go
 
 main :: IO ()
 main = do
@@ -45,3 +46,4 @@ convert bf "python" = Brain_py.create_program bf
 convert bf "java" = Brain_java.create_program bf
 convert bf "clojure" = Brain_clj.create_program bf
 convert bf "php" = Brain_php.create_program bf
+convert bf "go" = Brain_go.create_program bf
