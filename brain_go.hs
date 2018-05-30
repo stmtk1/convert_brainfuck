@@ -29,17 +29,15 @@ func create() TuringTape {
     return ret
 }
 
-func increment(a TuringTape) TuringTape {
+func increment(a *TuringTape) {
     a.tape[a.head]++
-    return a
 }
 
-func decrement(a TuringTape) TuringTape {
+func decrement(a *TuringTape) {
     a.tape[a.head]--
-    return a
 }
 
-func next_var(a TuringTape) TuringTape {
+func next_var(a *TuringTape) {
     a.head++
     if len(a.tape) <= a.head {
         new_tape := make([]byte, len(a.tape) + 1000)
@@ -52,10 +50,9 @@ func next_var(a TuringTape) TuringTape {
         }
         a.tape = new_tape
     }
-    return a
 }
 
-func prev_var(a TuringTape) TuringTape {
+func prev_var(a *TuringTape) {
     a.head--
     if a.head < 0 {
         new_tape := make([]byte, len(a.tape) + 1000)
@@ -69,16 +66,10 @@ func prev_var(a TuringTape) TuringTape {
         a.tape = new_tape
         a.head += 1000
     }
-    return a
 }
 
-func print_var(a TuringTape) TuringTape {
+func print_var(a *TuringTape) {
     fmt.Printf("%c", a.tape[a.head])
-    return a
-}
-
-func get_var(a TuringTape) TuringTape {
-    return a
 }
 
 |]
@@ -86,11 +77,11 @@ func get_var(a TuringTape) TuringTape {
 convert_brainfuck :: String -> String
 convert_brainfuck "" = ""
 
-convert_brainfuck ('+':rest) = "a = increment(a)\n" ++ convert_brainfuck rest
-convert_brainfuck ('-':rest) = "a = decrement(a)\n" ++ convert_brainfuck rest
-convert_brainfuck ('>':rest) = "a = next_var(a)\n" ++ convert_brainfuck rest
-convert_brainfuck ('<':rest) = "a = prev_var(a)\n" ++ convert_brainfuck rest
-convert_brainfuck ('.':rest) = "a = print_var(a)\n" ++ convert_brainfuck rest
+convert_brainfuck ('+':rest) = "increment(&a)\n" ++ convert_brainfuck rest
+convert_brainfuck ('-':rest) = "decrement(&a)\n" ++ convert_brainfuck rest
+convert_brainfuck ('>':rest) = "next_var(&a)\n" ++ convert_brainfuck rest
+convert_brainfuck ('<':rest) = "prev_var(&a)\n" ++ convert_brainfuck rest
+convert_brainfuck ('.':rest) = "print_var(&a)\n" ++ convert_brainfuck rest
 -- convert_brainfuck (',':rest) = " get_var()\n" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = " for a.tape[a.head] != 0 {\n" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = "}\n" ++ convert_brainfuck rest
