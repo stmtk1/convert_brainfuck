@@ -44,56 +44,57 @@ class BuildLambda():
     def evaluate(self, evaled):
         for p in self.processes:
             if p == "increment":
-                evaled = evaled.increment()
+                evaled.increment()
             elif p == "decrement": 
-                evaled = evaled.decrement()
+                evaled.decrement()
             elif p == "next_var":
-                evaled = evaled.next_var()
+                evaled.next_var()
             elif p == "prev_var":
-                evaled = evaled.prev_var()
+                evaled.prev_var()
             elif p == "print_var":
-                evaled = evaled.print_var()
+                evaled.print_var()
             elif p == "get_var":
-                evaled = evaled.get_var()
+                evaled.get_var()
             elif type(p) is list and p[0] == "loop_var":
-                evaled = evaled.loop_var(builder)
+                evaled.loop_var(p[1])
         return evaled
 
-class LinkedList():
+class TuringTape():
     def __init__(self):
-        self.value = 0
-        self.next = None
-        self.prev = None
-
-    def next_var(self):
-        if self.next == None:
-            self.next = LinkedList()
-            self.next.prev = self
-        return self.next
-
-    def prev_var(self):
-        if self.prev == None:
-            self.prev = LinkedList()
-            self.prev.next = self
-        return self.prev
-
+        self.tape = [ 0 for _ in range(0, 1000)]
+        self.head = 0
+    
     def increment(self):
-        self.value = (self.value + 1) % BYTE
+        value = self.tape[self.head]
+        self.tape[self.head] = (value + 1) % BYTE
         return self
 
     def decrement(self):
-        self.value = (self.value - 1 + BYTE) % BYTE
+        value = self.tape[self.head]
+        self.tape[self.head] = (value - 1 + BYTE) % BYTE
+        return self
+
+    def next_var(self):
+        self.head += 1
+        if len(self.tape) <= self.head:
+            self.tape = [ self.tape[i] if len(self.tape) <= i else 0 for i in range(0, len(self.tape) + 1000)]
+        return self
+
+    def prev_var(self):
+        self.head -= 1
+        if self.head < 0:
+            self.tape = [ 0 if i < 1000 else self.tape[i] for i in range(0, len(self.tape) + 1000)]
         return self
 
     def print_var(self):
-        stdout.write(chr(self.value))
+        stdout.write(chr(self.tape[self.head]))
         return self
 
     def loop_var(self, builder):
-        if self.value == 0:
+        if self.tape[self.head] == 0:
             return self
         return builder.evaluate(self).loop_var(builder)
-
+    
     def get_var(self):
        self.tape[self.head] = ord(stdin.read(1))
        return self
@@ -112,7 +113,7 @@ convert_brainfuck (']':rest) = ")" ++ convert_brainfuck rest
 convert_brainfuck (_:rest) = convert_brainfuck rest
 
 create_run :: String -> String
-create_run input = "LinkedList()" ++ (convert_brainfuck input)
+create_run input = "TuringTape()" ++ (convert_brainfuck input)
 
 create_program :: String -> String
 create_program input = before_main ++ (create_run input)
