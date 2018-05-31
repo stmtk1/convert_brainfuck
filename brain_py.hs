@@ -5,7 +5,7 @@ import Control.Applicative
 import Str
 
 before_main = [str|
-from sys import stdout
+from sys import stdout, stdin
 BYTE = 256
 
 class BuildLambda():
@@ -93,6 +93,10 @@ class LinkedList():
         if self.value == 0:
             return self
         return builder.evaluate(self).loop_var(builder)
+
+    def get_var(self):
+       self.tape[self.head] = ord(stdin.read(1))
+       return self
 |]
 
 convert_brainfuck :: String -> String
@@ -102,8 +106,7 @@ convert_brainfuck ('-':rest) = ".decrement()" ++ convert_brainfuck rest
 convert_brainfuck ('>':rest) = ".next_var()" ++ convert_brainfuck rest
 convert_brainfuck ('<':rest) = ".prev_var()" ++ convert_brainfuck rest
 convert_brainfuck ('.':rest) = ".print_var()" ++ convert_brainfuck rest
--- TODO
---convert_brainfuck (',':rest) = ".get_value()" ++ convert_brainfuck rest
+convert_brainfuck (',':rest) = ".get_var()" ++ convert_brainfuck rest
 convert_brainfuck ('[':rest) = ".loop_var(BuildLambda()" ++ convert_brainfuck rest
 convert_brainfuck (']':rest) = ")" ++ convert_brainfuck rest
 convert_brainfuck (_:rest) = convert_brainfuck rest
